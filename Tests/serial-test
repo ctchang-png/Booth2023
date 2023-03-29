@@ -1,0 +1,60 @@
+import serial
+import numpy as np
+import struct
+import time
+import os
+
+BUFFER_FORMAT = '>4siii'
+
+# MAC/LINUX
+#os.environ['TZ'] = 'America/New_York'
+#time.tzset()
+
+# Windows
+os.system('tzutil /s "Eastern Standard Time"')
+
+def make_test_points():
+  n = 100
+  x = np.linspace(0, 1000, n)
+  y = np.linspace(0, 2000, n)
+  z = np.linspace(0, 3000, n)
+  pts = np.transpose([x,y,z])
+  return pts
+
+
+def get_timestamp():
+    return time.strftime('%X %x')
+
+def log_Tx(buffer):
+    decoded_buffer = struct.unpack(BUFFER_FORMAT, buffer)
+    cmd = decoded_buffer[0].decode('utf-8')
+    timestamp = get_timestamp()
+    l1 = decoded_buffer[1]
+    l2 = decoded_buffer[2]
+    l3 = decoded_buffer[3]
+    print("{:}:\tSending Buffer ({:}, {:}, {:}, {:})\n\t\t\t Encoded as {:}".format(timestamp, cmd, l1, l2, l3, buffer))
+
+def main():
+    ser = serial.Serial(port='COM4', baudrate=115200)
+    points = make_test_points()
+    points = points.astype(int)
+    n = len(points)
+    print("n = {:}".format(n))
+    i = 0
+    while True:
+        p = points[i]
+        cmd = "GOTO" #or "SET " (include space for buffer size)
+        buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), p[0], p[1], p[2])
+        log_Tx(buffer)
+
+        # ser.write(buffer)
+        # data = ser.readline()
+
+
+        #print(decoded_buffer)
+        i = (i+1)%n
+        if i == 5:
+           break
+    return 0
+
+main()
