@@ -7,11 +7,11 @@ import os
 BUFFER_FORMAT = '>4siii'
 
 # MAC/LINUX
-#os.environ['TZ'] = 'America/New_York'
-#time.tzset()
+os.environ['TZ'] = 'America/New_York'
+time.tzset()
 
 # Windows
-os.system('tzutil /s "Eastern Standard Time"')
+#os.system('tzutil /s "Eastern Standard Time"')
 
 def make_test_points():
   n = 100
