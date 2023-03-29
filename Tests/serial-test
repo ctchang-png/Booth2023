@@ -35,7 +35,7 @@ def log_Tx(buffer):
     print("{:}:\tSending Buffer ({:}, {:}, {:}, {:})\n\t\t\t Encoded as {:}".format(timestamp, cmd, l1, l2, l3, buffer))
 
 def main():
-    ser = serial.Serial(port='COM4', baudrate=115200)
+    #ser = serial.Serial(port='COM4', baudrate=115200)
     points = make_test_points()
     points = points.astype(int)
     n = len(points)
