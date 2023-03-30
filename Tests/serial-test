@@ -4,6 +4,7 @@ import struct
 import time
 import os
 import sys
+import serial.tools.list_ports
 
 BUFFER_FORMAT = '4siii'
 BUFFER_SIZE = 16
@@ -50,6 +51,7 @@ def log_Rx(reply):
 
 def main():
     os_setup()
+    print(list(serial.tools.list_ports.comports()))
     ser = serial.Serial(port=COM_PORT, baudrate=115200, timeout=1)
     time.sleep(3.0)
     points = make_test_points()
