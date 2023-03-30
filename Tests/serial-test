@@ -3,15 +3,17 @@ import numpy as np
 import struct
 import time
 import os
+import sys
 
-BUFFER_FORMAT = '>4siii'
+BUFFER_FORMAT = '4siii'
+BUFFER_SIZE = 16
 
-# MAC/LINUX
-os.environ['TZ'] = 'America/New_York'
-time.tzset()
 
-# Windows
-#os.system('tzutil /s "Eastern Standard Time"')
+if sys.platform.startswith("linux"):  # could be "linux", "linux2", "linux3", ...
+    os.environ['TZ'] = 'America/New_York'
+    time.tzset()
+elif os.name == "nt":
+    os.system('tzutil /s "Eastern Standard Time"')
 
 def make_test_points():
   n = 100
@@ -23,7 +25,7 @@ def make_test_points():
 
 
 def get_timestamp():
-    return time.strftime('%X %x')
+    return time.strftime('%X')
 
 def log_Tx(buffer):
     decoded_buffer = struct.unpack(BUFFER_FORMAT, buffer)
@@ -32,29 +34,52 @@ def log_Tx(buffer):
     l1 = decoded_buffer[1]
     l2 = decoded_buffer[2]
     l3 = decoded_buffer[3]
-    print("{:}:\tSending Buffer ({:}, {:}, {:}, {:})\n\t\t\t Encoded as {:}".format(timestamp, cmd, l1, l2, l3, buffer))
+    print("{:}:\tSending Buffer ({:}, {:}, {:}, {:})\n\t\tEncoded as {:}".format(timestamp, cmd, l1, l2, l3, buffer))
+
+def log_Rx(reply):
+    print('\t\tReceived:  ', end='')
+    print(reply)
+
 
 def main():
-    #ser = serial.Serial(port='COM4', baudrate=115200)
+    ser = serial.Serial(port='COM9', baudrate=115200, timeout=1)
+    time.sleep(3.0)
     points = make_test_points()
     points = points.astype(int)
     n = len(points)
-    print("n = {:}".format(n))
     i = 0
     while True:
         p = points[i]
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), p[0], p[1], p[2])
         log_Tx(buffer)
-
-        # ser.write(buffer)
-        # data = ser.readline()
+        bytes_written = ser.write(buffer)
+        time.sleep(0.100)
+        # while (ser.inWaiting() == 0):
+        #     None
+        reply = ser.read(16)
+        log_Rx(reply)
 
 
         #print(decoded_buffer)
         i = (i+1)%n
         if i == 5:
-           break
+            break
+    ser.close()
     return 0
 
 main()
+
+# # Importing Libraries
+# import serial
+# import time
+# arduino = serial.Serial(port='COM9', baudrate=115200, timeout=.1)
+# def write_read(x):
+#     arduino.write(bytes(x, 'utf-8'))
+#     time.sleep(0.05)
+#     data = arduino.readline()
+#     return data
+# while True:
+#     num = input("Enter a number: ") # Taking input from user
+#     value = write_read(num)
+#     print(value) # printing the value

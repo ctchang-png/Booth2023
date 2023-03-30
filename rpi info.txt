@@ -1,5 +1,5 @@
 chang-pi@raspberrypi
 waterfallroom
-172.26.176.76
-
+USB-Micro IP: 172.26.176.76
+USB-C IP: 172.26.166.22
 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
