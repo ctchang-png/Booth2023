@@ -1,6 +1,8 @@
 import numpy as np
 from utils import *
 
+COM_PORT = get_serial()
+
 velocity = 30
 timestep = 0.300
 r = 0.3 * min(ROOM_WIDTH, ROOM_LENGTH)
@@ -13,11 +15,9 @@ params = (r, h0, hf, n_loops)
 
 
 
-
-
-
 def main():
     os_setup()
+    print("Detected COM Ports: ", end="")
     print(serial_ports())
     ser = serial.Serial(port=COM_PORT, baudrate=115200, timeout=1)
     time.sleep(3.0)
@@ -27,9 +27,9 @@ def main():
     n = len(points)
     i = 0
     while True:
-        p = points[i]
+        l = lengths[i]
         cmd = "GOTO" #or "SET " (include space for buffer size)
-        buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), p[0], p[1], p[2])
+        buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         log_Tx(buffer)
         bytes_written = ser.write(buffer)
         time.sleep(0.100)

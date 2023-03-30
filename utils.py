@@ -13,7 +13,6 @@ ROOM_WIDTH = 1300 #mm
 ROOM_LENGTH = 2000 #mm
 BUFFER_FORMAT = '4siii'
 BUFFER_SIZE = 16
-COM_PORT = None
 COM_PORT_RPI_USB = '/dev/ttyACM0'
 COM_PORT_LAPTOP = 'COM9'
 COM_PORT_RPI_GPIO = '/dev/ttyS0'
@@ -27,14 +26,17 @@ R_SPOOL = 50 #mm
 
 ##################### SYSTEM SETUP ###############################
 def os_setup():
-    global COM_PORT
     if sys.platform.startswith("linux"):  # could be "linux", "linux2", "linux3", ...
         os.environ['TZ'] = 'America/New_York'
         time.tzset()
-        COM_PORT = COM_PORT_RPI_GPIO
     elif os.name == "nt":
         os.system('tzutil /s "Eastern Standard Time"')
-        COM_PORT = COM_PORT_LAPTOP
+
+def get_serial():
+    if sys.platform.startswith("linux"):  # could be "linux", "linux2", "linux3", ...
+        return COM_PORT_RPI_GPIO
+    elif os.name == "nt":
+        return COM_PORT_LAPTOP    
 
 ##################### SERIAL ###############################
 
