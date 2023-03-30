@@ -11,14 +11,14 @@ BUFFER_SIZE = 16
 COM_PORT = None
 COM_PORT_RPI_USB = '/dev/ttyACM0'
 COM_PORT_LAPTOP = 'COM9'
-COM_PORT_RPI_GPIO = None
+COM_PORT_RPI_GPIO = '/dev/ttyAMA0'
 
 def os_setup():
     global COM_PORT
     if sys.platform.startswith("linux"):  # could be "linux", "linux2", "linux3", ...
         os.environ['TZ'] = 'America/New_York'
         time.tzset()
-        COM_PORT = COM_PORT_RPI_USB
+        COM_PORT = COM_PORT_RPI_GPIO
     elif os.name == "nt":
         os.system('tzutil /s "Eastern Standard Time"')
         COM_PORT = COM_PORT_LAPTOP
