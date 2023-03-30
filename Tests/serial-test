@@ -9,7 +9,7 @@ import glob
 BUFFER_FORMAT = '4siii'
 BUFFER_SIZE = 16
 COM_PORT = None
-COM_PORT_RPI_USB = 'dev/ttyS3'
+COM_PORT_RPI_USB = 'dev/ttyS0'
 COM_PORT_LAPTOP = 'COM9'
 COM_PORT_RPI_GPIO = None
 
@@ -78,7 +78,7 @@ def log_Rx(reply):
 
 def main():
     os_setup()
-    print(serial_ports())
+    #print(serial_ports())
     ser = serial.Serial(port=COM_PORT, baudrate=115200, timeout=1)
     time.sleep(3.0)
     points = make_test_points()
