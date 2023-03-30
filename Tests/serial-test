@@ -14,6 +14,7 @@ COM_PORT_LAPTOP = 'COM9'
 COM_PORT_RPI_GPIO = None
 
 def os_setup():
+    global COM_PORT
     if sys.platform.startswith("linux"):  # could be "linux", "linux2", "linux3", ...
         os.environ['TZ'] = 'America/New_York'
         time.tzset()
