@@ -93,8 +93,6 @@ def main():
         log_Tx(buffer)
         bytes_written = ser.write(buffer)
         time.sleep(0.100)
-        # while (ser.inWaiting() == 0):
-        #     None
         reply = ser.read(16)
         log_Rx(reply)
 
