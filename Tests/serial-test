@@ -9,7 +9,7 @@ import glob
 BUFFER_FORMAT = '4siii'
 BUFFER_SIZE = 16
 COM_PORT = None
-COM_PORT_RPI_USB = '/dev/ttyS0'
+COM_PORT_RPI_USB = '/dev/ttyACM0'
 COM_PORT_LAPTOP = 'COM9'
 COM_PORT_RPI_GPIO = None
 
