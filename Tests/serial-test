@@ -7,13 +7,17 @@ import sys
 
 BUFFER_FORMAT = '4siii'
 BUFFER_SIZE = 16
+COM_PORT = None
 
+def os_setup():
+    if sys.platform.startswith("linux"):  # could be "linux", "linux2", "linux3", ...
+        os.environ['TZ'] = 'America/New_York'
+        time.tzset()
+        COM_PORT = '/dev/pts/3'
+    elif os.name == "nt":
+        os.system('tzutil /s "Eastern Standard Time"')
+        COM_PORT = 'COM9'
 
-if sys.platform.startswith("linux"):  # could be "linux", "linux2", "linux3", ...
-    os.environ['TZ'] = 'America/New_York'
-    time.tzset()
-elif os.name == "nt":
-    os.system('tzutil /s "Eastern Standard Time"')
 
 def make_test_points():
   n = 100
@@ -42,7 +46,8 @@ def log_Rx(reply):
 
 
 def main():
-    ser = serial.Serial(port='COM9', baudrate=115200, timeout=1)
+    os_setup()
+    ser = serial.Serial(port=COM_PORT, baudrate=115200, timeout=1)
     time.sleep(3.0)
     points = make_test_points()
     points = points.astype(int)
@@ -68,18 +73,5 @@ def main():
     ser.close()
     return 0
 
-main()
-
-# # Importing Libraries
-# import serial
-# import time
-# arduino = serial.Serial(port='COM9', baudrate=115200, timeout=.1)
-# def write_read(x):
-#     arduino.write(bytes(x, 'utf-8'))
-#     time.sleep(0.05)
-#     data = arduino.readline()
-#     return data
-# while True:
-#     num = input("Enter a number: ") # Taking input from user
-#     value = write_read(num)
-#     print(value) # printing the value
+if __name__ == "__main__":
+    main()
