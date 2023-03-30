@@ -8,15 +8,18 @@ import sys
 BUFFER_FORMAT = '4siii'
 BUFFER_SIZE = 16
 COM_PORT = None
+COM_PORT_RPI_USB = 'dev/ttyS3'
+COM_PORT_LAPTOP = 'COM9'
+COM_PORT_RPI_GPIO = None
 
 def os_setup():
     if sys.platform.startswith("linux"):  # could be "linux", "linux2", "linux3", ...
         os.environ['TZ'] = 'America/New_York'
         time.tzset()
-        COM_PORT = '/dev/pts/3'
+        COM_PORT = COM_PORT_RPI_USB
     elif os.name == "nt":
         os.system('tzutil /s "Eastern Standard Time"')
-        COM_PORT = 'COM9'
+        COM_PORT = COM_PORT_LAPTOP
 
 
 def make_test_points():
