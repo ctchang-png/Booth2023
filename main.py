@@ -19,7 +19,7 @@ def main():
     os_setup()
     print("Detected COM Ports: ", end="")
     print(serial_ports())
-    ser = serial.Serial(port=COM_PORT, baudrate=115200, timeout=1)
+    ser = serial.Serial(port=COM_PORT, baudrate=115200)
     time.sleep(3.0)
     points = interpolate(velocity, timestep, helix_trajectory, params)
     lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, points, R_SPOOL))
@@ -32,14 +32,14 @@ def main():
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         log_Tx(buffer)
         bytes_written = ser.write(buffer)
-        time.sleep(0.100)
+        time.sleep(0.050)
         reply = ser.read(16)
         log_Rx(reply)
 
 
         #print(decoded_buffer)
         i = (i+1)%n
-        if i == 5:
+        if i == 10:
             break
     ser.close()
     return 0
