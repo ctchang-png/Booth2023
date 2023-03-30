@@ -11,7 +11,7 @@ BUFFER_SIZE = 16
 COM_PORT = None
 COM_PORT_RPI_USB = '/dev/ttyACM0'
 COM_PORT_LAPTOP = 'COM9'
-COM_PORT_RPI_GPIO = '/dev/ttyAMA0'
+COM_PORT_RPI_GPIO = '/dev/ttyS0'
 
 def os_setup():
     global COM_PORT
