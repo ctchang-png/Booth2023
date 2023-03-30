@@ -79,7 +79,7 @@ def log_Rx(reply):
 
 def main():
     os_setup()
-    #print(serial_ports())
+    print(serial_ports())
     ser = serial.Serial(port=COM_PORT, baudrate=115200, timeout=1)
     time.sleep(3.0)
     points = make_test_points()
