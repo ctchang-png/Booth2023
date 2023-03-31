@@ -31,8 +31,6 @@ def main():
         l = lengths[i]
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
-        buffer = struct.unpack('>4siii', buffer)
-        buffer = struct.pack('16s', buffer)
         log_Tx(buffer)
         bytes_written = ser.write(buffer)
         time.sleep(0.050)
