@@ -1,5 +1,6 @@
 import numpy as np
 from utils import *
+from socket import htonl
 
 COM_PORT = get_serial()
 
@@ -31,13 +32,12 @@ def main():
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         log_Tx(buffer)
+        buffer = htonl (buffer)
         bytes_written = ser.write(buffer)
         time.sleep(0.050)
         reply = ser.read(16)
         log_Rx(reply)
 
-
-        #print(decoded_buffer)
         i = (i+1)%n
         if i == 10:
             break
