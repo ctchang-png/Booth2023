@@ -34,7 +34,7 @@ def main():
         log_Tx(buffer)
         bytes_written = ser.write(buffer)
         time.sleep(0.050)
-        reply = ser.read(16)
+        reply = ser.read(12)
         log_Rx(reply)
 
         i = (i+1)%n
