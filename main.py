@@ -39,6 +39,7 @@ def main():
         log_Tx(buffer)
         bytes_written = ser.write(buffer.encode())
         time.sleep(0.050)
+        print(ser.is_open)
         reply = ser.read(100)
         log_Rx(reply)
 
