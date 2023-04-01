@@ -39,7 +39,7 @@ def main():
         log_Tx(buffer)
         bytes_written = ser.write(buffer.encode())
         time.sleep(0.050)
-        reply = ser.read()
+        reply = ser.read(100)
         log_Rx(reply)
 
         i = (i+1)%n
