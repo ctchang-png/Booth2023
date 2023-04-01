@@ -29,8 +29,11 @@ def main():
     i = 0
     while True:
         l = lengths[i]
+        l = [0, 0, 0]
         cmd = "GOTO" #or "SET " (include space for buffer size)
-        buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
+        #buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
+        buffer = "%4s %d %d %d".format(cmd, l[0], l[1], l[2])
+        buffer = buffer.encode('utf-8')
         log_Tx(buffer)
         bytes_written = ser.write(buffer)
         time.sleep(0.050)
