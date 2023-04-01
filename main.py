@@ -20,6 +20,7 @@ def main():
     os_setup()
     print("Detected COM Ports: ", end="")
     print(serial_ports())
+    print("Using COM PORT: {}".format(COM_PORT))
     ser = serial.Serial(port=COM_PORT, baudrate=115200)
     time.sleep(3.0)
     points = interpolate(velocity, timestep, helix_trajectory, params)
