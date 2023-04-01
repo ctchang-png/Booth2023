@@ -22,6 +22,8 @@ def main():
     print(serial_ports())
     print("Using COM PORT: {}".format(COM_PORT))
     ser = serial.Serial(port=COM_PORT, baudrate=115200)
+    ser.flushInput()
+    ser.flushOutput()
     time.sleep(3.0)
     points = interpolate(velocity, timestep, helix_trajectory, params)
     lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, points, R_SPOOL))
