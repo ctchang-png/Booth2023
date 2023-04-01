@@ -15,7 +15,7 @@ BUFFER_FORMAT = '>4siii'
 BUFFER_SIZE = 16
 COM_PORT_RPI_USB = '/dev/ttyACM0'
 COM_PORT_LAPTOP = 'COM9'
-COM_PORT_RPI_GPIO = '/dev/ttyS0'
+COM_PORT_RPI_GPIO = '/dev/AMA0' #/dev/ttyS0
 
 POINT_A = [0,0,0]
 POINT_B = [0,0,0]
