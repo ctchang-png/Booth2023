@@ -37,7 +37,7 @@ def main():
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         #buffer = "{} {} {} {}".format(cmd, l[0], l[1], l[2])
         log_Tx(buffer)
-        bytes_written = ser.write(buffer.encode())
+        bytes_written = ser.write(buffer)
         time.sleep(0.050)
         reply = ser.read(100)
         log_Rx(reply)
