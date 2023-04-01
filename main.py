@@ -40,6 +40,7 @@ def main():
         bytes_written = ser.write(buffer)
         time.sleep(0.050)
         reply = ser.read(4)
+        print("I read something")
         log_Rx(reply)
 
         i = (i+1)%n
