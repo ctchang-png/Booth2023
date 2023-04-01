@@ -32,10 +32,9 @@ def main():
         l = [0, 0, 0]
         cmd = "GOTO" #or "SET " (include space for buffer size)
         #buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
-        buffer = "%4s %d %d %d".format(cmd, l[0], l[1], l[2])
-        buffer = buffer.encode('utf-8')
+        buffer = "{} {} {} {}}".format(cmd, l[0], l[1], l[2])
         log_Tx(buffer)
-        bytes_written = ser.write(buffer)
+        bytes_written = ser.write(buffer.encode())
         time.sleep(0.050)
         reply = ser.read()
         log_Rx(reply)
