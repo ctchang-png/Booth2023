@@ -32,10 +32,9 @@ def main():
     i = 0
     while True:
         l = lengths[i]
-        l = [0, 0, 0]
+        l = [1, 2, 3]
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
-        #buffer = "{} {} {} {}".format(cmd, l[0], l[1], l[2])
         log_Tx(buffer)
         print("Attempting to Write")
         bytes_written = ser.write(buffer)
@@ -43,7 +42,7 @@ def main():
         time.sleep(0.050)
         print("Attempting to Read")
         reply = ser.read(16)
-        print("I read something")
+        print("Read")
         log_Rx(reply)
 
         i = (i+1)%n
