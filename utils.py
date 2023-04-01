@@ -72,7 +72,7 @@ def log_Tx(buffer):
     #l2 = decoded_buffer[2]
     #l3 = decoded_buffer[3]
     #print("{:}:\tSending Buffer ({:}, {:}, {:}, {:})\n\t\tEncoded as {:}".format(timestamp, cmd, l1, l2, l3, buffer))
-    print("{:}:\tSending Buffer {:}".format(timestamp, buffer))
+    print("{:}:\tSending Buffer %s".format(timestamp, buffer))
 
 def log_Rx(reply):
     print('\t\tReceived:  ', end='')
