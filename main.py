@@ -42,7 +42,7 @@ def main():
         print("Written")
         time.sleep(0.050)
         print("Attempting to Read")
-        reply = ser.read(4)
+        reply = ser.read(16)
         print("I read something")
         log_Rx(reply)
 
