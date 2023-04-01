@@ -36,13 +36,9 @@ def main():
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         log_Tx(buffer)
-        print("Attempting to Write")
         bytes_written = ser.write(buffer)
-        print("Written")
-        time.sleep(0.050)
-        print("Attempting to Read")
+        #time.sleep(0.050)
         reply = ser.read(16)
-        print("Read")
         log_Rx(reply)
 
         i = (i+1)%n
