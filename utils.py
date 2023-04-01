@@ -65,13 +65,14 @@ def get_timestamp():
     return time.strftime('%X')
 
 def log_Tx(buffer):
-    decoded_buffer = struct.unpack(BUFFER_FORMAT, buffer)
-    cmd = decoded_buffer[0].decode('utf-8')
+    #decoded_buffer = struct.unpack(BUFFER_FORMAT, buffer)
+    #cmd = decoded_buffer[0].decode('utf-8')
     timestamp = get_timestamp()
-    l1 = decoded_buffer[1]
-    l2 = decoded_buffer[2]
-    l3 = decoded_buffer[3]
-    print("{:}:\tSending Buffer ({:}, {:}, {:}, {:})\n\t\tEncoded as {:}".format(timestamp, cmd, l1, l2, l3, buffer))
+    #l1 = decoded_buffer[1]
+    #l2 = decoded_buffer[2]
+    #l3 = decoded_buffer[3]
+    #print("{:}:\tSending Buffer ({:}, {:}, {:}, {:})\n\t\tEncoded as {:}".format(timestamp, cmd, l1, l2, l3, buffer))
+    print("{:}:\tSending Buffer {:}".format(timestamp, buffer))
 
 def log_Rx(reply):
     print('\t\tReceived:  ', end='')
