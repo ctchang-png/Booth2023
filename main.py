@@ -21,7 +21,7 @@ def main():
     print("Detected COM Ports: ", end="")
     print(serial_ports())
     print("Using COM PORT: {}".format(COM_PORT))
-    ser = serial.Serial(port=COM_PORT, baudrate=115200)
+    ser = serial.Serial(port=COM_PORT, baudrate=115200, parity = serial.PARITY_NONE, stopbits = serial.STOPBITS_ONE)
     ser.flushInput()
     ser.flushOutput()
     time.sleep(3.0)
