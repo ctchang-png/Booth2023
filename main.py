@@ -14,7 +14,52 @@ params = (r, h0, hf, n_loops)
 # we'll need to add offsets/transforms to center this in the room
 # I also need to define a room origin and mounting locations for pulleys
 
+def calibrate(ser):
+    Calibration_Codes = {"OFF": "OFF ".encode(), 
+                         "TENSION": "TNSN".encode(), 
+                         "SET": "SET ".encode()}
+    yes_set = {"Y", "y", "yes", "YES"}
+    no_set = {"N", "n", "no", "NO"}
+    print("Initiating Calibration")
 
+    ## Free Motors and pull to origin
+    reply = input("TURN OFF MOTORS? [Y/N]")
+    if reply in yes_set:
+        ser.write(Calibration_Codes["OFF"])
+        print("Motors Deactivated")
+        print("Pull Island To Origin Location...")
+        print()
+    elif reply in no_set:
+        print("Aborting")
+        calibrate(ser)
+
+    ## 
+    reply = input("TENSION MOTORS? [Y/N]")
+    if reply in yes_set:
+        ser.write(Calibration_Codes["TENSION"])
+        print("Tensioning Motors")
+        ser.read()
+        print("Motors Locked")
+        print()
+    elif reply in no_set:
+        print("Aborting")
+        calibrate(ser)
+    
+    reply = input("SET ENCODERS? [Y/N]")
+    if reply in yes_set:
+        ser.write(Calibration_Codes["SET"])
+        print("Setting Encoders")
+        print()
+    elif reply in no_set:
+        calibrate(ser)
+
+    print("Calibration Complete")
+    return
+
+
+
+           
+    return 0
 
 def main():
     os_setup()
@@ -25,6 +70,10 @@ def main():
     ser.flushInput()
     ser.flushOutput()
     time.sleep(3.0)
+
+    calibrate(ser)
+
+
     points = interpolate(velocity, timestep, helix_trajectory, params)
     lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, points, R_SPOOL))
     lengths = lengths.astype(int)
