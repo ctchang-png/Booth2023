@@ -28,10 +28,10 @@ def calibrate(ser):
 
         buffer = struct.pack(BUFFER_FORMAT, 
                              Calibration_Codes["OFF"].encode('utf-8'), 0, 0, 0)
-        ser.read() #clear buffer
+        print(ser.read()) #clear buffer
         ser.write(buffer)
         print("Motors Deactivating")
-        ser.read()
+        print(ser.read())
         print("Pull Island To Origin Location...")
         print()
     elif reply in no_set:
