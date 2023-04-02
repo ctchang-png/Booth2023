@@ -4,7 +4,7 @@ from socket import htonl
 
 COM_PORT = get_serial()
 
-velocity = 30
+velocity = 300
 timestep = 0.300
 r = 0.3 * min(ROOM_WIDTH, ROOM_LENGTH)
 n_loops = 2
