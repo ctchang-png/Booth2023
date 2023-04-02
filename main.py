@@ -15,9 +15,9 @@ params = (r, h0, hf, n_loops)
 # I also need to define a room origin and mounting locations for pulleys
 
 def calibrate(ser):
-    Calibration_Codes = {"OFF": "OFF ".encode(), 
-                         "TENSION": "TNSN".encode(), 
-                         "SET": "SET ".encode()}
+    Calibration_Codes = {"OFF": "OFF ", 
+                         "TENSION": "TNSN", 
+                         "SET": "SET "}
     yes_set = {"Y", "y", "yes", "YES"}
     no_set = {"N", "n", "no", "NO"}
     print("Initiating Calibration")
@@ -53,7 +53,7 @@ def calibrate(ser):
     reply = input("SET ENCODERS? [Y/N]: ")
     if reply in yes_set:
         buffer = struct.pack(BUFFER_FORMAT, 
-                             Calibration_Codes["SET"].encode('utf-8'), 0, 0, 0)
+                             (Calibration_Codes["SET"]).encode('utf-8'), 0, 0, 0)
         ser.write(buffer)
         print("Setting Encoders")
         print()
