@@ -31,8 +31,7 @@ def main():
     n = len(points)
     i = 0
     while True:
-        l = lengths[i]
-        l = [10*i, 2, 3]
+        l = lengths[i] - lengths[0]
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         print("Waiting for Pull request")
@@ -44,8 +43,6 @@ def main():
         log_Rx(reply)
 
         i = (i+1)%n
-        if i == 10:
-            break
     ser.close()
     return 0
 
