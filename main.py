@@ -15,6 +15,7 @@ params = (r, h0, hf, n_loops)
 # I also need to define a room origin and mounting locations for pulleys
 
 def calibrate(ser):
+    ser.read()
     Calibration_Codes = {"OFF": "OFF ", 
                          "TENSION": "TNSN", 
                          "SET": "SET "}
@@ -77,7 +78,6 @@ def main():
     ser.flushInput()
     ser.flushOutput()
     time.sleep(3.0)
-    ser.read()
 
     calibrate(ser)
 
