@@ -26,7 +26,8 @@ def calibrate(ser):
     reply = input("TURN OFF MOTORS? [Y/N]")
     if reply in yes_set:
         ser.write(Calibration_Codes["OFF"])
-        print("Motors Deactivated")
+        print("Motors Deactivating")
+        ser.read()
         print("Pull Island To Origin Location...")
         print()
     elif reply in no_set:
@@ -47,6 +48,7 @@ def calibrate(ser):
     
     reply = input("SET ENCODERS? [Y/N]")
     if reply in yes_set:
+        
         ser.write(Calibration_Codes["SET"])
         print("Setting Encoders")
         print()
