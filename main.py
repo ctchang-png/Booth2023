@@ -23,7 +23,7 @@ def calibrate(ser):
     print("Initiating Calibration")
 
     ## Free Motors and pull to origin
-    reply = input("TURN OFF MOTORS? [Y/N]")
+    reply = input("TURN OFF MOTORS? [Y/N]: ")
     if reply in yes_set:
         ser.write(Calibration_Codes["OFF"])
         print("Motors Deactivating")
@@ -35,7 +35,7 @@ def calibrate(ser):
         calibrate(ser)
 
     ## 
-    reply = input("TENSION MOTORS? [Y/N]")
+    reply = input("TENSION MOTORS? [Y/N]: ")
     if reply in yes_set:
         ser.write(Calibration_Codes["TENSION"])
         print("Tensioning Motors")
@@ -46,9 +46,9 @@ def calibrate(ser):
         print("Aborting")
         calibrate(ser)
     
-    reply = input("SET ENCODERS? [Y/N]")
+    reply = input("SET ENCODERS? [Y/N]: ")
     if reply in yes_set:
-        
+
         ser.write(Calibration_Codes["SET"])
         print("Setting Encoders")
         print()
