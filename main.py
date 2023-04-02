@@ -15,7 +15,6 @@ params = (r, h0, hf, n_loops)
 # I also need to define a room origin and mounting locations for pulleys
 
 def calibrate(ser):
-    ser.read()
     Calibration_Codes = {"OFF": "OFF ", 
                          "TENSION": "TNSN", 
                          "SET": "SET "}
@@ -26,8 +25,10 @@ def calibrate(ser):
     ## Free Motors and pull to origin
     reply = input("TURN OFF MOTORS? [Y/N]: ")
     if reply in yes_set:
+
         buffer = struct.pack(BUFFER_FORMAT, 
                              Calibration_Codes["OFF"].encode('utf-8'), 0, 0, 0)
+        ser.read() #clear buffer
         ser.write(buffer)
         print("Motors Deactivating")
         ser.read()
