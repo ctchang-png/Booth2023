@@ -17,9 +17,9 @@ COM_PORT_RPI_USB = '/dev/ttyACM0'
 COM_PORT_LAPTOP = 'COM9'
 COM_PORT_RPI_GPIO = '/dev/ttyAMA0' #/dev/ttyS0
 
-POINT_A = [0,0,0]
-POINT_B = [0,0,0]
-POINT_C = [0,0,0]
+POINT_A = [0, 0, ROOM_HEIGHT]
+POINT_B = [ROOM_LENGTH//3, ROOM_WIDTH, ROOM_HEIGHT]
+POINT_C = [ROOM_LENGTH, ROOM_WIDTH//3, ROOM_HEIGHT]
 
 R_SPOOL = 50 #mm
 
@@ -154,3 +154,6 @@ def point2rad(pt_A, pt_B, pt_C, points, radius):
     t3 = l3/radius
     thetas.append([t1, t2, t3])
   return thetas
+
+
+############################### Calibration ####################3

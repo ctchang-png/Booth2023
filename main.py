@@ -25,7 +25,9 @@ def calibrate(ser):
     ## Free Motors and pull to origin
     reply = input("TURN OFF MOTORS? [Y/N]: ")
     if reply in yes_set:
-        ser.write(Calibration_Codes["OFF"])
+        buffer = struct.pack(BUFFER_FORMAT, 
+                             Calibration_Codes["OFF"].encode('utf-8'), 0, 0, 0)
+        ser.write(buffer)
         print("Motors Deactivating")
         ser.read()
         print("Pull Island To Origin Location...")
@@ -37,7 +39,9 @@ def calibrate(ser):
     ## 
     reply = input("TENSION MOTORS? [Y/N]: ")
     if reply in yes_set:
-        ser.write(Calibration_Codes["TENSION"])
+        buffer = struct.pack(BUFFER_FORMAT, 
+                             Calibration_Codes["TENSION"].encode('utf-8'), 0, 0, 0)
+        ser.write(buffer)
         print("Tensioning Motors")
         ser.read()
         print("Motors Locked")
@@ -48,8 +52,9 @@ def calibrate(ser):
     
     reply = input("SET ENCODERS? [Y/N]: ")
     if reply in yes_set:
-
-        ser.write(Calibration_Codes["SET"])
+        buffer = struct.pack(BUFFER_FORMAT, 
+                             Calibration_Codes["SET"].encode('utf-8'), 0, 0, 0)
+        ser.write(buffer)
         print("Setting Encoders")
         print()
     elif reply in no_set:
