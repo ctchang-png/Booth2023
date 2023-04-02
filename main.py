@@ -29,7 +29,6 @@ def calibrate(ser):
         buffer = struct.pack(BUFFER_FORMAT, 
                              Calibration_Codes["OFF"].encode('utf-8'), 0, 0, 0)
 
-        ser.flushOutput()
         ser.flushInput()
         ser.write(buffer)
         print("Motors Deactivating")
