@@ -44,6 +44,7 @@ def calibrate(ser):
     if reply in yes_set:
         buffer = struct.pack(BUFFER_FORMAT, 
                              Calibration_Codes["TENSION"].encode('utf-8'), 0, 0, 0)
+        ser.flushInput()
         ser.write(buffer)
         print("Tensioning Motors")
         ser.read()
@@ -57,6 +58,7 @@ def calibrate(ser):
     if reply in yes_set:
         buffer = struct.pack(BUFFER_FORMAT, 
                              (Calibration_Codes["SET"]).encode('utf-8'), 0, 0, 0)
+        ser.flushInput()
         ser.write(buffer)
         print("Setting Encoders")
         print()
@@ -65,9 +67,6 @@ def calibrate(ser):
 
     print("Calibration Complete")
     return
-
-
-
            
     return 0
 
