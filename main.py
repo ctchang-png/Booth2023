@@ -81,6 +81,7 @@ def main():
     time.sleep(3.0)
 
     calibrate(ser)
+    return 0
 
 
     points = interpolate(velocity, timestep, helix_trajectory, params)
