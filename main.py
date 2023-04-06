@@ -2,6 +2,17 @@ import numpy as np
 from utils import *
 from socket import htonl
 
+ROOM_HEIGHT = 5000 #mm
+ROOM_WIDTH = 1300 #mm
+ROOM_LENGTH = 2000 #mm
+
+
+POINT_A = [0, 0, ROOM_HEIGHT]
+POINT_B = [ROOM_LENGTH//3, ROOM_WIDTH, ROOM_HEIGHT]
+POINT_C = [ROOM_LENGTH, ROOM_WIDTH//3, ROOM_HEIGHT]
+
+R_SPOOL = 50 #mm
+
 COM_PORT = get_serial()
 
 velocity = 300

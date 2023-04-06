@@ -198,8 +198,8 @@ int main(void)
   Motor_t motor3 = {
   	.dir1_port = DIR31_GPIO_Port,
   	.dir1_pin = DIR31_Pin,
-  	.dir2_port = DIR31_GPIO_Port,
-  	.dir2_pin = DIR31_Pin,
+  	.dir2_port = DIR32_GPIO_Port,
+  	.dir2_pin = DIR32_Pin,
   	.pwm_tim = &htim4,
   	.pwm_tim_ch = TIM_CHANNEL_4,
   	.encoder_tim = &htim3

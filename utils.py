@@ -8,20 +8,12 @@ import glob
 import numpy as np
 import math
 
-ROOM_HEIGHT = 5000 #mm
-ROOM_WIDTH = 1300 #mm
-ROOM_LENGTH = 2000 #mm
+
 BUFFER_FORMAT = '<4siii'
 BUFFER_SIZE = 16
 COM_PORT_RPI_USB = '/dev/ttyACM0'
 COM_PORT_LAPTOP = 'COM9'
 COM_PORT_RPI_GPIO = '/dev/ttyAMA0' #/dev/ttyS0
-
-POINT_A = [0, 0, ROOM_HEIGHT]
-POINT_B = [ROOM_LENGTH//3, ROOM_WIDTH, ROOM_HEIGHT]
-POINT_C = [ROOM_LENGTH, ROOM_WIDTH//3, ROOM_HEIGHT]
-
-R_SPOOL = 50 #mm
 
 
 ##################### SYSTEM SETUP ###############################
