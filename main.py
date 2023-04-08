@@ -106,8 +106,8 @@ def main():
     helix_lengths = helix_lengths.astype(int)
 
     lengths = []
-    lengths.append(rapid_lengths)
-    lengths.append(helix_lengths)
+    lengths.extend(rapid_lengths)
+    lengths.extend(helix_lengths)
     n = len(lengths)
     i = 0
     while True:
