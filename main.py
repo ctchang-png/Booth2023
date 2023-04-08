@@ -69,9 +69,9 @@ def calibrate(ser):
     if reply in yes_set:
         buffer = struct.pack(BUFFER_FORMAT, 
                              (Calibration_Codes["SET"]).encode('utf-8'),
-                             np.linalg.norm(POINT_A),
-                             np.linalg.norm(POINT_B),
-                             np.linalg.norm(POINT_C))
+                             int(np.linalg.norm(POINT_A)),
+                             int(np.linalg.norm(POINT_B)),
+                             int(np.linalg.norm(POINT_C)))
         ser.flushInput()
         ser.write(buffer)
         print("Setting Encoders")
