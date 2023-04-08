@@ -1643,6 +1643,7 @@ int main(void)
  80011f6:	f107 0314 	add.w	r3, r7, #20
  80011fa:	4618      	mov	r0, r3
  80011fc:	f000 fcf4 	bl	8001be8 <pid_loop>
+
 	if (uart_ready) {
  8001200:	4b8a      	ldr	r3, [pc, #552]	; (800142c <main+0x398>)
  8001202:	781b      	ldrb	r3, [r3, #0]
@@ -3866,24 +3867,24 @@ void tension(PID_Controller_t* p1, PID_Controller_t* p2, PID_Controller_t* p3) {
 	float eps = 0.001; // 1 mm/s
  80020c4:	4b33      	ldr	r3, [pc, #204]	; (8002194 <tension+0xdc>)
  80020c6:	617b      	str	r3, [r7, #20]
-	drive_motor(p1->motor, FORWARD, (uint16_t) ~0);
+	drive_motor(p1->motor, FORWARD, (uint16_t) (~0)>>1);
  80020c8:	68fb      	ldr	r3, [r7, #12]
  80020ca:	681b      	ldr	r3, [r3, #0]
- 80020cc:	f64f 72ff 	movw	r2, #65535	; 0xffff
+ 80020cc:	f647 72ff 	movw	r2, #32767	; 0x7fff
  80020d0:	2102      	movs	r1, #2
  80020d2:	4618      	mov	r0, r3
  80020d4:	f7ff fc9e 	bl	8001a14 <drive_motor>
-	drive_motor(p2->motor, FORWARD, (uint16_t) ~0);
+	drive_motor(p2->motor, FORWARD, (uint16_t) (~0)>>1);
  80020d8:	68bb      	ldr	r3, [r7, #8]
  80020da:	681b      	ldr	r3, [r3, #0]
- 80020dc:	f64f 72ff 	movw	r2, #65535	; 0xffff
+ 80020dc:	f647 72ff 	movw	r2, #32767	; 0x7fff
  80020e0:	2102      	movs	r1, #2
  80020e2:	4618      	mov	r0, r3
  80020e4:	f7ff fc96 	bl	8001a14 <drive_motor>
-	drive_motor(p3->motor, FORWARD, (uint16_t) ~0);
+	drive_motor(p3->motor, FORWARD, (uint16_t) (~0)>>1);
  80020e8:	687b      	ldr	r3, [r7, #4]
  80020ea:	681b      	ldr	r3, [r3, #0]
- 80020ec:	f64f 72ff 	movw	r2, #65535	; 0xffff
+ 80020ec:	f647 72ff 	movw	r2, #32767	; 0x7fff
  80020f0:	2102      	movs	r1, #2
  80020f2:	4618      	mov	r0, r3
  80020f4:	f7ff fc8e 	bl	8001a14 <drive_motor>

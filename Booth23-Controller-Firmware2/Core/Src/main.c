@@ -248,6 +248,7 @@ int main(void)
 	pid_loop(&pid1);
 	pid_loop(&pid2);
 	pid_loop(&pid3);
+
 	if (uart_ready) {
 		Command_t cmd;
 		uint8_t r = parse_command(&cmd, uart_rx_buf);
@@ -872,9 +873,9 @@ void update_state(PID_Controller_t* pid) {
 
 void tension(PID_Controller_t* p1, PID_Controller_t* p2, PID_Controller_t* p3) {
 	float eps = 0.001; // 1 mm/s
-	drive_motor(p1->motor, FORWARD, (uint16_t) ~0);
-	drive_motor(p2->motor, FORWARD, (uint16_t) ~0);
-	drive_motor(p3->motor, FORWARD, (uint16_t) ~0);
+	drive_motor(p1->motor, FORWARD, (uint16_t) (~0)>>1);
+	drive_motor(p2->motor, FORWARD, (uint16_t) (~0)>>1);
+	drive_motor(p3->motor, FORWARD, (uint16_t) (~0)>>1);
 
 	uint32_t t_start = HAL_GetTick();
 	while (HAL_GetTick() - t_start < 1000) {

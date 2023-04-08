@@ -2,21 +2,21 @@ import numpy as np
 from utils import *
 from socket import htonl
 
-ROOM_HEIGHT = 5000 #mm
+ROOM_HEIGHT = 2200 #mm
 ROOM_WIDTH = 1300 #mm
 ROOM_LENGTH = 2000 #mm
 
 
-POINT_A = [0, 0, ROOM_HEIGHT]
-POINT_B = [ROOM_LENGTH//3, ROOM_WIDTH, ROOM_HEIGHT]
-POINT_C = [ROOM_LENGTH, ROOM_WIDTH//3, ROOM_HEIGHT]
+POINT_A = [ROOM_LENGTH, 0, ROOM_HEIGHT]
+POINT_B = [0, 0, ROOM_HEIGHT]
+POINT_C = [0, ROOM_WIDTH, ROOM_HEIGHT]
 
-R_SPOOL = 50 #mm
+R_SPOOL = 20 #mm
 
 COM_PORT = get_serial()
 
-velocity = 300
-timestep = 0.300
+velocity = 10
+timestep = 0.100
 r = 0.3 * min(ROOM_WIDTH, ROOM_LENGTH)
 n_loops = 10
 h0 = 0.2 * ROOM_HEIGHT
@@ -92,6 +92,7 @@ def main():
     time.sleep(3.0)
 
     calibrate(ser)
+    return 0
 
 
     points = interpolate(velocity, timestep, helix_trajectory, params)
@@ -105,11 +106,11 @@ def main():
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         print("Waiting for Pull request")
         signal = ser.read(1)
-        log_Tx(buffer)
+        #log_Tx(buffer)
         bytes_written = ser.write(buffer)
         #time.sleep(0.050)
         reply = ser.read(16)
-        log_Rx(reply)
+        #log_Rx(reply)
 
         i = (i+1)%n
     ser.close()
