@@ -92,6 +92,21 @@ def helix_trajectory(params, t):
 
     return [x,y,z]
 
+def line_trajectory(params, t):
+    # params: (p0, pF)
+    # t: 0 <= t <= 1
+    assert(0 <= t and t <= 1)
+
+    p0, pf = params
+    x0, y0, z0 = p0
+    xf, yf, zf = pf
+
+    x = x0 + (xf - x0) * t
+    y = y0 + (yf - y0) * t
+    z = z0 + (zf - z0) * t
+
+    return [x, y, z]
+
 def calculate_arc_length(trajectory, params, sample_pts=10000):
     # trajectory: (x,y,z) = traj(params, t) in mm
     # params: (,)

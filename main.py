@@ -96,14 +96,22 @@ def main():
 
     calibrate(ser)
 
+    helix_points = interpolate(velocity, timestep, helix_trajectory, params)
+    pf = helix_points[0]
+    p0 = [0, 0, 0]
+    rapid_points = interpolate(velocity, timestep, line_trajectory, (p0, pf))
+    rapid_lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, rapid_points))
+    rapid_lengths = rapid_lengths.astype(int)
+    helix_lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, helix_points))
+    helix_lengths = helix_lengths.astype(int)
 
-    points = interpolate(velocity, timestep, helix_trajectory, params)
-    lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, points))
-    lengths = lengths.astype(int)
-    n = len(points)
+    lengths = []
+    lengths.append(rapid_lengths)
+    lengths.append(helix_lengths)
+    n = len(lengths)
     i = 0
     while True:
-        l = lengths[i] - lengths[0]
+        l = lengths[i]
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         print("Waiting for Pull request")
