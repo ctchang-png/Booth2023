@@ -15,7 +15,7 @@ R_SPOOL = 20 #mm
 
 COM_PORT = get_serial()
 
-velocity = 100
+velocity = 300
 timestep = 0.100
 r = 0.3 * min(ROOM_WIDTH, ROOM_LENGTH)
 n_loops = 10
@@ -68,7 +68,10 @@ def calibrate(ser):
     reply = input("SET ENCODERS? [Y/N]: ")
     if reply in yes_set:
         buffer = struct.pack(BUFFER_FORMAT, 
-                             (Calibration_Codes["SET"]).encode('utf-8'), 0, 0, 0)
+                             (Calibration_Codes["SET"]).encode('utf-8'),
+                             np.linalg.norm(POINT_A),
+                             np.linalg.norm(POINT_B),
+                             np.linalg.norm(POINT_C))
         ser.flushInput()
         ser.write(buffer)
         print("Setting Encoders")
