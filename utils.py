@@ -126,7 +126,7 @@ def interpolate(velocity, timestep, trajectory, params):
 
 ##################### KINEMATICS ###############################
 
-def point2length(pt_A, pt_B, pt_C, points, radius):
+def point2length(pt_A, pt_B, pt_C, points):
   lengths = []
   for p in points:
     l1 = math.dist(p, pt_A)

@@ -98,7 +98,7 @@ def main():
 
 
     points = interpolate(velocity, timestep, helix_trajectory, params)
-    lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, points, R_SPOOL))
+    lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, points))
     lengths = lengths.astype(int)
     n = len(points)
     i = 0
