@@ -128,7 +128,7 @@ def main():
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         #print("Waiting for Pull request")
-        if i == n_helix:
+        if i == n_helix-1:
             print("Helix Segment Complete")
         signal = ser.read(1)
         #log_Tx(buffer)
