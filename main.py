@@ -120,14 +120,14 @@ def main():
         signal = ser.read(1)
         bytes_written = ser.write(buffer)
         reply = ser.read(16)
+    
+    print("Rapid Segment Complete")
 
     while True:
         l = helix_lengths[i]
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         #print("Waiting for Pull request")
-        if i == n_rapid:
-            print("Rapid Segment Complete")
         if i == n_helix:
             print("Helix Segment Complete")
         signal = ser.read(1)
