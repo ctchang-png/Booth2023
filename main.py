@@ -113,8 +113,16 @@ def main():
     n_helix = len(helix_lengths)
     n = len(lengths)
     i = 0
+    for i in range(n_rapid):
+        l = rapid_lengths[i]
+        cmd = "GOTO" #or "SET " (include space for buffer size)
+        buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
+        signal = ser.read(1)
+        bytes_written = ser.write(buffer)
+        reply = ser.read(16)
+
     while True:
-        l = lengths[i]
+        l = helix_lengths[i]
         cmd = "GOTO" #or "SET " (include space for buffer size)
         buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
         #print("Waiting for Pull request")
@@ -129,7 +137,7 @@ def main():
         reply = ser.read(16)
         #log_Rx(reply)
 
-        i = (i+1)%n
+        i = (i+1)%n_helix
     ser.close()
     return 0
 
