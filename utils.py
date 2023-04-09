@@ -7,6 +7,7 @@ import sys
 import glob
 import numpy as np
 import math
+#import matplotlib.pyplot as plt
 
 
 BUFFER_FORMAT = '<4siii'
@@ -164,4 +165,35 @@ def point2rad(pt_A, pt_B, pt_C, points, radius):
   return thetas
 
 
-############################### Calibration ####################3
+############################### Debug/Plotting ####################
+def plot_helix():
+    ROOM_HEIGHT = 2200 #mm
+    ROOM_WIDTH = 1300 #mm
+    ROOM_LENGTH = 2000 #mm
+    r = 0.3 * min(ROOM_WIDTH, ROOM_LENGTH)
+    n_loops = 5
+    h0 = 0.2 * ROOM_HEIGHT
+    hf = 0.8 * ROOM_HEIGHT
+    params = (r, h0, hf, n_loops)
+    ax = plt.figure().add_subplot(projection='3d')
+
+    # Prepare arrays x, y, z
+    n = 100
+    t = np.linspace(0, 1, n)
+    z = np.zeros((n,))
+    x = np.zeros((n,))
+    y = np.zeros((n,))
+
+    for i in range(n):
+        tp = t[i]
+        xp, yp, zp = helix_trajectory(params, tp)
+        x[i] = xp
+        y[i] = yp
+        z[i] = zp
+
+    ax.plot(x, y, z, label='parametric curve')
+    ax.legend()
+
+    plt.show()
+
+#plot_helix()
