@@ -67,14 +67,15 @@ def calibrate(ser):
     
     reply = input("SET ENCODERS? [Y/N]: ")
     if reply in yes_set:
+        l1 = int(np.linalg.norm(POINT_A))
+        l2 = int(np.linalg.norm(POINT_B))
+        l3 = int(np.linalg.norm(POINT_C))
         buffer = struct.pack(BUFFER_FORMAT, 
                              (Calibration_Codes["SET"]).encode('utf-8'),
-                             int(np.linalg.norm(POINT_A)),
-                             int(np.linalg.norm(POINT_B)),
-                             int(np.linalg.norm(POINT_C)))
+                             l1, l2, l3)
         ser.flushInput()
         ser.write(buffer)
-        print("Setting Encoders")
+        print("Setting Encoders to ({}, {}, {})".format(l1, l2, l3))
         print()
     elif reply in no_set:
         calibrate(ser)
