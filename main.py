@@ -15,7 +15,7 @@ R_SPOOL = 20 #mm
 
 COM_PORT = get_serial()
 
-velocity = 300
+velocity = 200
 timestep = 0.100
 r = 0.3 * min(ROOM_WIDTH, ROOM_LENGTH)
 n_loops = 5
