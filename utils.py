@@ -130,6 +130,7 @@ def interpolate(velocity, timestep, trajectory, params):
     # discretize curve using 10000 sample pts to calculate curve length
     s = calculate_arc_length(trajectory, params, sample_pts = 10000)
     T = s / velocity
+    print("Total Trajectory Time: {}s".format(T))
     intervals = round(T / timestep)
 
 
