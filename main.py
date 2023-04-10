@@ -2,6 +2,10 @@ import numpy as np
 from utils import *
 from socket import htonl
 
+
+yes_set = {"Y", "y", "yes", "YES"}
+no_set = {"N", "n", "no", "NO"}
+
 ROOM_HEIGHT = 2200 #mm
 ROOM_WIDTH = 1300 #mm
 ROOM_LENGTH = 2000 #mm
@@ -15,7 +19,7 @@ R_SPOOL = 20 #mm
 
 COM_PORT = get_serial()
 
-velocity = 200
+velocity = 400
 timestep = 0.100
 r = 0.3 * min(ROOM_WIDTH, ROOM_LENGTH)
 n_loops = 5
@@ -29,8 +33,6 @@ def calibrate(ser):
     Calibration_Codes = {"OFF": "OFF ", 
                          "TENSION": "TNSN", 
                          "SET": "SET "}
-    yes_set = {"Y", "y", "yes", "YES"}
-    no_set = {"N", "n", "no", "NO"}
     print("Initiating Calibration")
 
     ## Free Motors and pull to origin
@@ -85,18 +87,33 @@ def calibrate(ser):
            
     return 0
 
-def main():
-    os_setup()
-    print("Detected COM Ports: ", end="")
-    print(serial_ports())
-    print("Using COM PORT: {}".format(COM_PORT))
-    ser = serial.Serial(port=COM_PORT, baudrate=115200, parity = serial.PARITY_NONE, stopbits = serial.STOPBITS_ONE)
-    ser.flushInput()
-    ser.flushOutput()
-    time.sleep(3.0)
+def move_manual():
+    print("Manual mode")
+    print("<X> <Y> <Z> (in mm)")
+    while True:
+        reply = input("> ")
+        L = reply.split()
+        if len(L) != 3:
+            continue
+        try:
+           x, y, z = map(int, L)
+        except ValueError:
+            continue
+        lengths = point2length(POINT_A, POINT_B, POINT_C, [(x, y, z)])
+        lengths = map(int, lengths)
+        goto(*lengths)
+        
 
-    calibrate(ser)
+def goto(l0, l1, l2):
+    
+    cmd = "GOTO" #or "SET " (include space for buffer size)
+    buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l0, l1, l2)
+    signal = ser.read(1)
+    bytes_written = ser.write(buffer)
+    reply = ser.read(16)
 
+
+def move_helix():
     helix_points = interpolate(velocity, timestep, helix_trajectory, params)
     pf = helix_points[0]
     p0 = [0, 0, 0]
@@ -115,29 +132,38 @@ def main():
     i = 0
     for i in range(n_rapid):
         l = rapid_lengths[i]
-        cmd = "GOTO" #or "SET " (include space for buffer size)
-        buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
-        signal = ser.read(1)
-        bytes_written = ser.write(buffer)
-        reply = ser.read(16)
     
     print("Rapid Segment Complete")
 
     while True:
         l = helix_lengths[i]
-        cmd = "GOTO" #or "SET " (include space for buffer size)
-        buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l[0], l[1], l[2])
-        #print("Waiting for Pull request")
         if i == n_helix-1:
             print("Helix Segment Complete")
-        signal = ser.read(1)
-        #log_Tx(buffer)
-        bytes_written = ser.write(buffer)
-        #time.sleep(0.050)
-        reply = ser.read(16)
-        #log_Rx(reply)
+        
+        goto(*l)
 
         i = (i+1)%n_helix
+
+def main():
+    os_setup()
+    print("Detected COM Ports: ", end="")
+    print(serial_ports())
+    print("Using COM PORT: {}".format(COM_PORT))
+    ser = serial.Serial(port=COM_PORT, baudrate=115200, parity = serial.PARITY_NONE, stopbits = serial.STOPBITS_ONE)
+    ser.flushInput()
+    ser.flushOutput()
+    time.sleep(3.0)
+
+    reply = input("Run Calibration? [Y/N]: ")
+    if reply in yes_set: 
+        calibrate(ser)
+    
+    reply = input("Select Mode: [M]anual / [H]elix"):
+    if reply[0].upper == 'M':
+        move_manual()
+    elif reply[0].upper == 'H':
+        move_helix()
+
     ser.close()
     return 0
 
