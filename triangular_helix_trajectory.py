@@ -10,7 +10,7 @@ def triangular_helix_trajectory(params, t):
     # t: 0 <= t <= 1
     # returns: (x(t),y(t),z(t)) in mm
     assert(0 <= t and t <= 1)
-    X0 = params[0]
+    X0 = np.array(params[0])
     l = params[1]
     w = params[2]
     h = params[3]
