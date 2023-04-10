@@ -21,11 +21,22 @@ COM_PORT = get_serial()
 
 velocity = 400
 timestep = 0.100
+
+## helix ##
 r = 0.3 * min(ROOM_WIDTH, ROOM_LENGTH)
 n_loops = 5
 h0 = 0.2 * ROOM_HEIGHT
 hf = 0.8 * ROOM_HEIGHT
-params = (r, h0, hf, n_loops)
+helix_params = (r, h0, hf, n_loops)
+
+## triangular helix ##
+X0 = [0.1*ROOM_LENGTH, 0.1*ROOM_WIDTH, 0.1*ROOM_HEIGHT]
+l = 0.8*ROOM_LENGTH
+w = 0.8*ROOM_WIDTH
+h = 0.8*ROOM_HEIGHT
+n_loops = 2
+t_helix_params = (X0, l, w, h, n_loops)
+
 # we'll need to add offsets/transforms to center this in the room
 # I also need to define a room origin and mounting locations for pulleys
 
@@ -114,7 +125,7 @@ def goto(l0, l1, l2, ser):
 
 
 def move_helix(ser):
-    helix_points = interpolate(velocity, timestep, helix_trajectory, params)
+    helix_points = interpolate(velocity, timestep, helix_trajectory, helix_params)
     pf = helix_points[0]
     p0 = [0, 0, 0]
     rapid_points = interpolate(velocity, timestep, line_trajectory, (p0, pf))
@@ -145,7 +156,7 @@ def move_helix(ser):
         i = (i+1)%n_helix
 
 def move_triangular_helix(ser):
-    t_helix_points = interpolate(velocity, timestep, triangular_helix_trajectory, params)
+    t_helix_points = interpolate(velocity, timestep, triangular_helix_trajectory, t_helix_params)
     pf = t_helix_points[0]
     p0 = [0, 0, 0]
     rapid_points = interpolate(velocity, timestep, line_trajectory, (p0, pf))
