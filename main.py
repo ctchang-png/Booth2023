@@ -158,7 +158,7 @@ def main():
     if reply in yes_set: 
         calibrate(ser)
     
-    reply = input("Select Mode: [M]anual / [H]elix")
+    reply = input("Select Mode: [M]anual / [H]elix: ")
     if reply[0].upper == 'M':
         move_manual()
     elif reply[0].upper == 'H':
