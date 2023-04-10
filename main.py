@@ -87,7 +87,7 @@ def calibrate(ser):
            
     return 0
 
-def move_manual():
+def move_manual(ser):
     print("Manual mode")
     print("<X> <Y> <Z> (in mm)")
     while True:
@@ -99,12 +99,12 @@ def move_manual():
            x, y, z = map(int, L)
         except ValueError:
             continue
-        lengths = point2length(POINT_A, POINT_B, POINT_C, [(x, y, z)])
+        lengths = point2length(POINT_A, POINT_B, POINT_C, [(x, y, z)])[0]
         lengths = map(int, lengths)
-        goto(*lengths)
+        goto(*lengths, ser)
         
 
-def goto(l0, l1, l2):
+def goto(l0, l1, l2, ser):
     
     cmd = "GOTO" #or "SET " (include space for buffer size)
     buffer = struct.pack(BUFFER_FORMAT, cmd.encode('utf-8'), l0, l1, l2)
@@ -113,7 +113,7 @@ def goto(l0, l1, l2):
     reply = ser.read(16)
 
 
-def move_helix():
+def move_helix(ser):
     helix_points = interpolate(velocity, timestep, helix_trajectory, params)
     pf = helix_points[0]
     p0 = [0, 0, 0]
@@ -140,7 +140,7 @@ def move_helix():
         if i == n_helix-1:
             print("Helix Segment Complete")
         
-        goto(*l)
+        goto(*l, ser)
 
         i = (i+1)%n_helix
 
@@ -160,9 +160,9 @@ def main():
     
     reply = input("Select Mode: [M]anual / [H]elix: ")
     if reply[0].upper() == 'M':
-        move_manual()
+        move_manual(ser)
     elif reply[0].upper() == 'H':
-        move_helix()
+        move_helix(ser)
 
     ser.close()
     return 0
