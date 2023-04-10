@@ -144,6 +144,37 @@ def move_helix(ser):
 
         i = (i+1)%n_helix
 
+def move_triangular_helix(ser):
+    t_helix_points = interpolate(velocity, timestep, triangular_helix_trajectory, params)
+    pf = t_helix_points[0]
+    p0 = [0, 0, 0]
+    rapid_points = interpolate(velocity, timestep, line_trajectory, (p0, pf))
+    rapid_lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, rapid_points))
+    rapid_lengths = rapid_lengths.astype(int)
+    t_helix_lengths = np.array(point2length(POINT_A, POINT_B, POINT_C, t_helix_points))
+    t_helix_lengths = t_helix_lengths.astype(int)
+
+    lengths = []
+    lengths.extend(rapid_lengths)
+    lengths.extend(t_helix_lengths)
+    n_rapid = len(rapid_lengths)
+    n_helix = len(t_helix_lengths)
+    n = len(lengths)
+    i = 0
+    for i in range(n_rapid):
+        l = rapid_lengths[i]
+    
+    print("Rapid Segment Complete")
+
+    while True:
+        l = t_helix_lengths[i]
+        if i == n_helix-1:
+            print("Helix Segment Complete")
+        
+        goto(*l, ser)
+
+        i = (i+1)%n_helix
+
 def main():
     os_setup()
     print("Detected COM Ports: ", end="")
@@ -163,6 +194,8 @@ def main():
         move_manual(ser)
     elif reply[0].upper() == 'H':
         move_helix(ser)
+    elif reply[0].upper() == 'T':
+        move_triangular_helix(ser)
 
     ser.close()
     return 0

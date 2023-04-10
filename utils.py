@@ -73,6 +73,45 @@ def log_Rx(reply):
 
 ##################### TRJAECTORY GENERATION ###############################
 
+def triangular_helix_trajectory(params, t):
+    # params: (X0, l, w, h0, hf, n_loops) in mm
+    # t: 0 <= t <= 1
+    # returns: (x(t),y(t),z(t)) in mm
+    assert(0 <= t and t <= 1)
+    X0 = np.array(params[0])
+    l = params[1]
+    w = params[2]
+    h = params[3]
+    n_loops = params[4]
+
+
+    s_loop = l + w + (l**2 + w**2)**(0.5)
+    
+    loop_number = math.floor(t * n_loops)
+    l1_portion = l / s_loop
+    l2_portion = w / s_loop
+    l3_portion = (l**2 + w**2)**0.5 / s_loop
+    loop_progress = ((t * n_loops )- loop_number)
+
+    z = (h/2) + (h/2)*np.sin(2*math.pi * t - math.pi/2)
+    if (0 <= loop_progress < l1_portion):
+        l1_progress = loop_progress
+        X = X0 + [(l1_progress / l1_portion) * l, 0, z]
+    elif (l1_portion <= loop_progress < l1_portion + l2_portion):
+        l2_progress = loop_progress - l1_portion
+        X = X0 + [l, 0, 0] + [- (l2_progress / l2_portion)*l, (l2_progress / l2_portion) * w, z]
+    elif (l1_portion + l2_portion < loop_progress <= l1_portion + l2_portion + l3_portion):
+        l3_progress = loop_progress - l2_portion - l1_portion
+        X = X0 + [0, w, 0] + [0, -(l3_progress / l3_portion) * w, z]
+    else:
+        X = [0, 0, 0]
+        print("loop progress out of bounds")
+    x = X[0]
+    y = X[1]
+    z = X[2]
+
+    return [x,y,z]
+
 def helix_trajectory(params, t):
     # params: (radius, h0, hf, n_loops) in mm
     # t: 0 <= t <= 1
