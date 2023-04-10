@@ -19,7 +19,7 @@ R_SPOOL = 20 #mm
 
 COM_PORT = get_serial()
 
-velocity = 400
+velocity = 200
 timestep = 0.100
 
 ## helix ##
