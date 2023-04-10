@@ -159,9 +159,9 @@ def main():
         calibrate(ser)
     
     reply = input("Select Mode: [M]anual / [H]elix: ")
-    if reply[0].upper == 'M':
+    if reply[0].upper() == 'M':
         move_manual()
-    elif reply[0].upper == 'H':
+    elif reply[0].upper() == 'H':
         move_helix()
 
     ser.close()
