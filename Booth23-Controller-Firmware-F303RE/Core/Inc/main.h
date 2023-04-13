@@ -66,10 +66,6 @@ void Error_Handler(void);
 #define EN21_GPIO_Port GPIOA
 #define EN22_Pin GPIO_PIN_1
 #define EN22_GPIO_Port GPIOA
-#define USART_TX_Pin GPIO_PIN_2
-#define USART_TX_GPIO_Port GPIOA
-#define USART_RX_Pin GPIO_PIN_3
-#define USART_RX_GPIO_Port GPIOA
 #define DIR31_Pin GPIO_PIN_4
 #define DIR31_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
@@ -88,12 +84,6 @@ void Error_Handler(void);
 #define EN12_GPIO_Port GPIOA
 #define DIR11_Pin GPIO_PIN_10
 #define DIR11_GPIO_Port GPIOA
-#define TMS_Pin GPIO_PIN_13
-#define TMS_GPIO_Port GPIOA
-#define TCK_Pin GPIO_PIN_14
-#define TCK_GPIO_Port GPIOA
-#define SWO_Pin GPIO_PIN_3
-#define SWO_GPIO_Port GPIOB
 #define DIR22_Pin GPIO_PIN_4
 #define DIR22_GPIO_Port GPIOB
 #define DIR21_Pin GPIO_PIN_5

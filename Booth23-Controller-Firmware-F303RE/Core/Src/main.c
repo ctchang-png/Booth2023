@@ -21,7 +21,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,23 +98,26 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 
+UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart3_rx;
 
 /* USER CODE BEGIN PV */
 uint8_t uart_rx_buf[RX_BUF_SIZE];
 volatile bool uart_ready = false;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
+static void MX_USART3_UART_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
-static void MX_USART3_UART_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 void motor_init(Motor_t* motor);
 void drive_motor(Motor_t* motor, Direction_t dir, uint16_t speed);
@@ -164,93 +170,98 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+  MX_USART3_UART_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
-  MX_USART3_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  Motor_t motor1 = {
-  	  .dir1_port = DIR11_GPIO_Port,
-	  .dir1_pin = DIR11_Pin,
-	  .dir2_port = DIR12_GPIO_Port,
-	  .dir2_pin = DIR12_Pin,
-	  .pwm_tim = &htim4,
-	  .pwm_tim_ch = TIM_CHANNEL_1,
-	  .encoder_tim = &htim1
-  };
+    Motor_t motor1 = {
+    	.dir1_port = DIR11_GPIO_Port,
+    	.dir1_pin = DIR11_Pin,
+    	.dir2_port = DIR12_GPIO_Port,
+    	.dir2_pin = DIR12_Pin,
+    	.pwm_tim = &htim4,
+    	.pwm_tim_ch = TIM_CHANNEL_1,
+    	.encoder_tim = &htim1
+    };
 
-  Motor_t motor2 = {
-	  .dir1_port = DIR21_GPIO_Port,
-	  .dir1_pin = DIR21_Pin,
-	  .dir2_port = DIR22_GPIO_Port,
-	  .dir2_pin = DIR22_Pin,
-	  .pwm_tim = &htim4,
- 	  .pwm_tim_ch = TIM_CHANNEL_3,
-	  .encoder_tim = &htim2
-  };
+    Motor_t motor2 = {
+    	.dir1_port = DIR21_GPIO_Port,
+    	.dir1_pin = DIR21_Pin,
+    	.dir2_port = DIR22_GPIO_Port,
+    	.dir2_pin = DIR22_Pin,
+    	.pwm_tim = &htim4,
+    	.pwm_tim_ch = TIM_CHANNEL_3,
+    	.encoder_tim = &htim2
+    };
 
-  Motor_t motor3 = {
-	  .dir1_port = DIR31_GPIO_Port,
-	  .dir1_pin = DIR31_Pin,
-	  .dir2_port = DIR32_GPIO_Port,
-	  .dir2_pin = DIR32_Pin,
-	  .pwm_tim = &htim4,
-	  .pwm_tim_ch = TIM_CHANNEL_4,
-	  .encoder_tim = &htim3
-  };
+    Motor_t motor3 = {
+    	.dir1_port = DIR31_GPIO_Port,
+    	.dir1_pin = DIR31_Pin,
+    	.dir2_port = DIR32_GPIO_Port,
+    	.dir2_pin = DIR32_Pin,
+    	.pwm_tim = &htim4,
+    	.pwm_tim_ch = TIM_CHANNEL_4,
+    	.encoder_tim = &htim3
+    };
 
-  float K_p = 500000.0;
-  float K_d = 100000.0;
-  float E = 0.00147;
+    //float K_p = 500000.0; When E = 0.0011...
+    float K_p12 = 1000.0;
+    float K_p3  = 500.0;
+    //float K_d = 100000.0; When E = 0.0011
+    float K_d12 = 1000.0;
+    float K_d3  = 100.0;
+    float E12 = 1.178; //
+    float E3  = 0.4712; //check this I coudn't find posted CPR
 
-  PID_Controller_t pid1;
-  PID_Controller_t pid2;
-  PID_Controller_t pid3;
+    PID_Controller_t pid1;
+    PID_Controller_t pid2;
+    PID_Controller_t pid3;
 
-  motor_init(&motor1);
-  motor_init(&motor2);
-  motor_init(&motor3);
+    motor_init(&motor1);
+    motor_init(&motor2);
+    motor_init(&motor3);
 
-  pid_init(&pid1, &motor1, K_p, K_d, E);
-  pid_init(&pid2, &motor2, K_p, K_d, E);
-  pid_init(&pid3, &motor3, K_p, K_d, E);
+    pid_init(&pid1, &motor1, K_p12, K_d12, E12);
+    pid_init(&pid2, &motor2, K_p12, K_d12, E12);
+    pid_init(&pid3, &motor3, K_p3, K_d3, E3);
 
 
-  HAL_UART_Receive_DMA(&huart3, uart_rx_buf, RX_BUF_SIZE);
-  HAL_UART_Transmit(&huart3, '0', 1, 100);
+    HAL_UART_Receive_DMA(&huart3, uart_rx_buf, RX_BUF_SIZE);
+    HAL_UART_Transmit(&huart3, '0', 1, 100);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int millis = HAL_GetTick();
-  int prev_millis = millis;
+    int millis = HAL_GetTick();
+    int prev_millis = millis;
 
-  bool continue_flag = false;
-
+    bool continue_flag = false;
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	millis = HAL_GetTick();
-	if (millis - prev_millis >= 100 && !uart_ready) {
-		// ready to receive every 100ms
-		HAL_UART_Transmit(&huart3, '0', 1, 100);
-		prev_millis = millis;
-	}
-	pid_loop(&pid1);
-	pid_loop(&pid2);
-	pid_loop(&pid3);
+		millis = HAL_GetTick();
+		if (millis - prev_millis >= 100 && !uart_ready) {
+			// ready to receive every 100ms
+			HAL_UART_Transmit(&huart3, '0', 1, 100);
+			prev_millis = millis;
+		}
+		pid_loop(&pid1);
+		pid_loop(&pid2);
+		pid_loop(&pid3);
 
-	if (uart_ready) {
-		Command_t cmd;
-		uint8_t r = parse_command(&cmd, uart_rx_buf);
-		if (r == 0) {
-			switch(cmd.cmd) {
-			case Command_Word_GOTO:
+		if (uart_ready) {
+			Command_t cmd;
+			uint8_t r = parse_command(&cmd, uart_rx_buf);
+			if (r == 0) {
+				switch(cmd.cmd) {
+				case Command_Word_GOTO:
 					pid1.target = (float) cmd.p1;
 					pid2.target = (float) cmd.p2;
 					pid3.target = (float) cmd.p3;
@@ -259,6 +270,10 @@ int main(void)
 					pid1.pos = (float) cmd.p1;
 					pid2.pos = (float) cmd.p2;
 					pid3.pos = (float) cmd.p3;
+
+					pid1.target = pid1.pos;
+					pid2.target = pid2.pos;
+					pid3.target = pid3.pos;
 
 					pid1.u = 0;
 					pid2.u = 0;
@@ -332,10 +347,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
-  RCC_OscInitStruct.PLL.PREDIV = RCC_PREDIV_DIV1;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -345,17 +357,19 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART3|RCC_PERIPHCLK_TIM1
-                              |RCC_PERIPHCLK_TIM2|RCC_PERIPHCLK_TIM34;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_USART3
+                              |RCC_PERIPHCLK_TIM1|RCC_PERIPHCLK_TIM2
+                              |RCC_PERIPHCLK_TIM34;
+  PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInit.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
   PeriphClkInit.Tim1ClockSelection = RCC_TIM1CLK_HCLK;
   PeriphClkInit.Tim2ClockSelection = RCC_TIM2CLK_HCLK;
@@ -539,7 +553,7 @@ static void MX_TIM4_Init(void)
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 65535;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
   {
     Error_Handler();
@@ -583,6 +597,41 @@ static void MX_TIM4_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 38400;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * @brief USART3 Initialization Function
   * @param None
   * @retval None
@@ -598,7 +647,7 @@ static void MX_USART3_UART_Init(void)
 
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
-  huart3.Init.BaudRate = 115200 ;
+  huart3.Init.BaudRate = 115200;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
   huart3.Init.Parity = UART_PARITY_NONE;
@@ -646,6 +695,7 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
@@ -660,14 +710,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : USART_TX_Pin USART_RX_Pin */
-  GPIO_InitStruct.Pin = USART_TX_Pin|USART_RX_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : DIR31_Pin LD2_Pin DIR11_Pin */
   GPIO_InitStruct.Pin = DIR31_Pin|LD2_Pin|DIR11_Pin;
@@ -692,7 +734,220 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void drive_motor(Motor_t* motor, Direction_t dir, uint16_t speed)
+{
+	switch (dir) {
+		case OFF:
+			HAL_GPIO_WritePin(motor->dir1_port, motor->dir1_pin, 0);
+			HAL_GPIO_WritePin(motor->dir2_port, motor->dir2_pin, 0);
+			break;
+		case BLOCK:
+			HAL_GPIO_WritePin(motor->dir1_port, motor->dir1_pin, 1);
+			HAL_GPIO_WritePin(motor->dir2_port, motor->dir2_pin, 1);
+			break;
+		case FORWARD:
+			HAL_GPIO_WritePin(motor->dir1_port, motor->dir1_pin, 1);
+			HAL_GPIO_WritePin(motor->dir2_port, motor->dir2_pin, 0);
+			break;
+		case BACK:
+			HAL_GPIO_WritePin(motor->dir1_port, motor->dir1_pin, 0);
+			HAL_GPIO_WritePin(motor->dir2_port, motor->dir2_pin, 1);
+			break;
+	};
 
+	__HAL_TIM_SET_COMPARE(motor->pwm_tim, motor->pwm_tim_ch, speed);
+}
+
+void motor_init(Motor_t *motor)
+{
+	HAL_TIM_PWM_Start(motor->pwm_tim, motor->pwm_tim_ch);
+	HAL_TIM_Encoder_Start(motor->encoder_tim, TIM_CHANNEL_ALL);
+}
+
+void pid_init(PID_Controller_t* pid, Motor_t* motor,
+		      float K_p, float K_d, float E)
+{
+	pid->motor = motor;
+	pid->target = 0.0;
+	pid->pos = 0.0;
+	pid->last_e = 0.0;
+	pid->K_p = K_p;
+	pid->K_d = K_d;
+	pid->E = E;
+	pid->velocity_buf[0] = 0.0;
+	pid->velocity_buf[1] = 0.0;
+	pid->velocity_buf[2] = 0.0;
+	pid->velocity_buf[3] = 0.0;
+	pid->velocity_buf[4] = 0.0;
+	pid->velocity = 0;
+	pid->t_millis = HAL_GetTick() + 1;
+	pid->last_t_millis = HAL_GetTick();
+	pid->last_encoder_pos = encoder_read_raw(motor);
+
+	pid->last_ticks = HAL_GetTick();
+}
+
+void pid_set_target(PID_Controller_t* pid, float target)
+{
+	pid->target = target;
+}
+
+void pid_loop(PID_Controller_t* pid)
+{
+	update_state(pid);
+	float e = pid->pos - pid->target;
+	float de = e - pid->last_e;
+
+	pid->u = (int) (-pid->K_p * e - pid->K_d*de);
+
+	pid->u = clamp(pid->u, -PWM_MAX, PWM_MAX);
+
+	if (pid->u > 0) {
+		drive_motor(pid->motor, FORWARD, pid->u);
+	} else {
+		drive_motor(pid->motor, BACK, -pid->u);
+	}
+
+	pid->last_e = e;
+}
+
+void pid_set_pos(PID_Controller_t* pid, float pos)
+{
+	pid->pos = pos;
+}
+
+uint16_t encoder_read_raw(Motor_t* motor)
+{
+	uint16_t val = (motor->encoder_tim->Instance->CNT) >> 2;
+	return val;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	HAL_UART_Receive_DMA(&huart3, uart_rx_buf, RX_BUF_SIZE);
+	uart_ready = 1;
+}
+
+uint8_t parse_command(Command_t *cmd, uint8_t buf[RX_BUF_SIZE])
+{
+	int CMD_WORD_SIZE = 4;
+	//Fixing CMD WORD TO 4, JUST ADD A SPACE TO SET: "SET "
+	char cmd_word[CMD_WORD_SIZE];
+	int p1_i, p2_i, p3_i;
+	const float factor = 1.0; // read mm commands and set mm positions
+	for (int i = 0; i < 4; i++) {
+		cmd_word[i] = buf[i];
+	};
+	p1_i = *(int*)(&buf[CMD_WORD_SIZE]);
+	p2_i = *(int*)(&buf[CMD_WORD_SIZE + 4]);
+	p3_i = *(int*)(&buf[CMD_WORD_SIZE + 8]);
+
+	if (strncmp(cmd_word, "GOTO", 4) == 0) {
+		cmd->cmd = Command_Word_GOTO;
+	} else if (strncmp(cmd_word, "SET ", 4) == 0) {
+		cmd->cmd = Command_Word_SET;
+	} else if (strncmp(cmd_word, "OFF ", 4) == 0) {
+		cmd->cmd = Command_Word_OFF;
+	} else if (strncmp(cmd_word, "BLCK", 4) == 0) {
+		cmd->cmd = Command_Word_BLOCK;
+	} else if (strncmp(cmd_word, "TNSN", 4) == 0) {
+		cmd->cmd = Command_Word_TENSION;
+	} else {
+		return 1;
+	}
+	cmd->p1 = (float) p1_i * factor;
+	cmd->p2 = (float) p2_i * factor;
+	cmd->p3 = (float) p3_i * factor;
+	return 0;
+}
+
+int clamp(int val, int lo, int hi) {
+	if (val < lo) {
+		return lo;
+	} else if (val > hi) {
+		return hi;
+	} else {
+		return val;
+	}
+}
+
+void off(Motor_t* m1, Motor_t* m2, Motor_t* m3) {
+	drive_motor(m1, OFF, 0);
+	drive_motor(m2, OFF, 0);
+	drive_motor(m3, OFF, 0);
+}
+
+void block(Motor_t* m1, Motor_t* m2, Motor_t* m3){
+	drive_motor(m1, BLOCK, (uint16_t) ~0);
+	drive_motor(m2, BLOCK, (uint16_t) ~0);
+	drive_motor(m3, BLOCK, (uint16_t) ~0);
+}
+
+void update_state(PID_Controller_t* pid) {
+	uint16_t raw_read = encoder_read_raw(pid->motor);
+	int32_t prev = (int32_t)pid->last_encoder_pos;
+	int32_t curr = (int32_t)raw_read;
+	int32_t diff = curr - prev;
+
+	if (abs(diff) > MAX_DIFF) {
+		diff = 0;
+	}
+
+	pid->last_encoder_pos = raw_read;
+
+	if (diff < -(1 << 15)) {
+		// overflow in the positive direction
+		diff = (1 << 16) + diff;
+	} else if (diff > (1 << 15)) {
+		// overflow in the positive direction
+		diff = diff - (1 << 16);
+	}
+
+	uint32_t delta_t_millis = pid->t_millis - pid->last_t_millis;
+	pid->last_t_millis = pid->t_millis;
+	pid->t_millis = HAL_GetTick();
+
+	float dpos = pid->E * (float) diff;
+	float v = 1000.0 * dpos/(float) delta_t_millis;
+
+	for (int i = 0; i < 4; i++) {
+		pid->velocity_buf[i] = pid->velocity_buf[i+1];
+	}
+	pid->velocity_buf[4] = v;
+
+	float sum = 0.0;
+	for (int i = 0; i < 5; i++) {
+		sum += pid->velocity_buf[i]/5.0;
+	}
+	pid->velocity = sum;
+
+	pid->pos += dpos;
+}
+
+void tension(PID_Controller_t* p1, PID_Controller_t* p2, PID_Controller_t* p3) {
+	float eps = 0.001; //mm/s
+	drive_motor(p1->motor, BACK, (uint16_t) (~0)>>2);
+	drive_motor(p2->motor, BACK, (uint16_t) (~0)>>2);
+	drive_motor(p3->motor, BACK, (uint16_t) (~0)>>2);
+
+	char MSG[50] = {'\0'};
+
+	uint32_t t_start = HAL_GetTick();
+	while (HAL_GetTick() - t_start < 1000) {
+		update_state(p1);
+		update_state(p2);
+		update_state(p3);
+		HAL_Delay(50);
+	}
+
+	while ((abs(p1->velocity) > eps) || (abs(p2->velocity) > eps) || (abs(p3->velocity) > eps)) {
+		update_state(p1);
+		update_state(p2);
+		update_state(p3);
+		HAL_Delay(20);
+	}
+	block(p1->motor, p2->motor, p3->motor);
+}
 /* USER CODE END 4 */
 
 /**
